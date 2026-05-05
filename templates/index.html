@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ResumeAI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+<div class="navbar">
+    <h2>ResumeAI</h2>
+</div>
+
+<div class="hero">
+    <h1>AI Resume Analyzer</h1>
+    <p>Improve your resume with smart insights and job matching</p>
+</div>
+
+<div class="main">
+
+    <div class="card upload">
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="resume" required>
+            <button type="submit">Analyze Resume</button>
+        </form>
+    </div>
+
+    {% if skills %}
+
+    <div class="card">
+        <h3>Detected Skills</h3>
+        <p class="info">Skills identified from your resume:</p>
+        <div class="skills">
+            {% for skill in skills %}
+                <span class="tag">{{ skill }}</span>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="card">
+        <h3>Recommended Role</h3>
+        <p class="info">Best fit role based on your skills:</p>
+        <p class="role">{{ role }}</p>
+    </div>
+
+    <div class="card">
+        <h3>Job Match Score</h3>
+        <div class="progress">
+            <div class="progress-bar" style="width: {{ score }}%;"></div>
+        </div>
+        <p>{{ score }}% match</p>
+    </div>
+
+    <div class="card">
+        <h3>Skills to Improve</h3>
+        <ul>
+            {% for m in missing %}
+                <li>{{ m }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="card feedback">
+        <h3>Detailed Feedback</h3>
+        <p>{{ feedback }}</p>
+    </div>
+
+    {% endif %}
+
+</div>
+
+</body>
+</html>
