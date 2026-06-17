@@ -542,30 +542,44 @@
 
         <div class="col-md-4">
 
-            <h5>Matched Skills</h5>
+           <h5>Matched Skills</h5>
 
-            {% for skill in jd_results.matched %}
+{% if jd_results.matched %}
 
-                <span class="skill-chip">
-                    ✓ {{ skill }}
-                </span>
+    {% for skill in jd_results.matched %}
 
-            {% endfor %}
+        <span class="skill-chip">
+            ✓ {{ skill }}
+        </span>
 
+    {% endfor %}
+
+{% else %}
+
+    <p class="text-muted">-</p>
+
+{% endif %}
         </div>
 
         <div class="col-md-4">
 
             <h5>Missing Skills</h5>
 
-            {% for skill in jd_results.missing %}
+{% if jd_results.missing %}
 
-                <span class="skill-chip">
-                    ✗ {{ skill }}
-                </span>
+    {% for skill in jd_results.missing %}
 
-            {% endfor %}
+        <span class="skill-chip">
+            ✗ {{ skill }}
+        </span>
 
+    {% endfor %}
+
+{% else %}
+
+    <p class="text-muted">-</p>
+
+{% endif %}
         </div>
 
     </div>
