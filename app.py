@@ -1,4 +1,5 @@
 from flask import Flask, render_template, request
+import re
 import PyPDF2
 from docx import Document
 
@@ -6,131 +7,527 @@ app = Flask(__name__)
 
 SKILLS_DB = [
 
+    # AI / ML
+
+    "ai",
+    "artificial intelligence",
+    "generative ai",
+    "agentic ai",
+    "machine learning",
+    "deep learning",
+    "nlp",
+    "natural language processing",
+    "computer vision",
+    "llm",
+    "large language models",
+    "rag",
+    "retrieval augmented generation",
+    "prompt engineering",
+    "fine tuning",
+    "reinforcement learning",
+    "hugging face",
+    "langchain",
+    "langgraph",
+    "llamaindex",
+    "openai",
+    "gemini",
+    "claude",
+    "mistral",
+    "vector database",
+    "faiss",
+    "pinecone",
+    "chroma db",
+
+    # Data Science / Analytics
+
+    "data analysis",
+    "data science",
+    "data visualization",
+    "business intelligence",
+    "statistics",
+    "predictive analytics",
+    "data mining",
+    "data cleaning",
+    "data warehousing",
+    "etl",
+    "power bi",
+    "tableau",
+    "excel",
+    "power query",
+    "dax",
+    "looker",
+
+    # Programming Languages
+
     "python",
     "java",
     "c",
     "c++",
+    "c#",
+    "javascript",
+    "typescript",
+    "php",
+    "ruby",
+    "go",
+    "golang",
+    "rust",
+    "swift",
+    "kotlin",
+    "dart",
+    "r",
+    "matlab",
+
+    # Frontend
 
     "html",
     "css",
-    "javascript",
-    "typescript",
-
+    "bootstrap",
+    "tailwind css",
     "react",
+    "next.js",
+    "redux",
+    "angular",
+    "vue.js",
+    "jquery",
+
+    # Backend
+
+    "node.js",
     "node",
     "express",
-
     "django",
     "flask",
+    "fastapi",
     "spring boot",
+    "laravel",
+    "asp.net",
+    "rest api",
+    "graphql",
+    "microservices",
+    "jwt",
+
+    # Databases
 
     "sql",
     "mysql",
     "postgresql",
     "mongodb",
+    "sqlite",
+    "oracle",
+    "firebase",
+    "redis",
+    "supabase",
 
-    "machine learning",
-    "deep learning",
-    "data analysis",
-    "data science",
+    # Python Libraries
 
     "pandas",
     "numpy",
     "scikit-learn",
+    "matplotlib",
+    "seaborn",
+    "plotly",
+    "opencv",
+    "beautifulsoup",
+    "selenium",
+    "keras",
+
+    # Deep Learning Frameworks
 
     "tensorflow",
     "pytorch",
 
-    "power bi",
-    "tableau",
-    "excel",
+    # Cloud / DevOps
 
     "aws",
     "azure",
+    "gcp",
+    "google cloud",
     "docker",
     "kubernetes",
-
+    "terraform",
+    "jenkins",
+    "github actions",
+    "ci/cd",
+    "nginx",
     "linux",
+
+    # Version Control
+
     "git",
     "github",
+    "gitlab",
+    "bitbucket",
 
-    "rest api"
+    # Mobile Development
+
+    "android",
+    "flutter",
+    "react native",
+    "ios",
+    "dart",
+    "kotlin",
+    "swift",
+
+    # Cybersecurity
+
+    "cybersecurity",
+    "ethical hacking",
+    "penetration testing",
+    "network security",
+    "cryptography",
+    "owasp",
+
+    # Testing
+
+    "unit testing",
+    "integration testing",
+    "pytest",
+    "jest",
+    "selenium testing",
+
+    # Software Engineering
+
+    "oop",
+    "object oriented programming",
+    "design patterns",
+    "system design",
+    "agile",
+    "scrum",
+
+    # Tools
+
+    "jira",
+    "postman",
+    "figma",
+    "canva",
+    "weka"
+
+    "data structures",
+"algorithms",
+"communication",
+"reporting",
+"predictive analytics",
+"data pipelines",
+"spark",
+"airflow",
+"terraform",
+"jenkins",
+"ci/cd",
+"github actions",
+"nginx",
+"monitoring",
+"hibernate",
+"xml",
+"mobile development",
+"firewalls",
+"security testing",
+"risk assessment",
+"database",
+"performance tuning",
+"backup",
+"recovery",
+"testing",
+"automation testing",
+"quality assurance",
+"bug tracking",
+"wireframing",
+"prototyping",
+"user research",
+"ux",
+"ui",
+"adobe xd",
+"mockups"
 ]
 
 JOB_ROLES = {
 
-    "Frontend Developer": [
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "typescript"
-    ],
 
-    "Backend Developer": [
-        "python",
-        "django",
-        "flask",
-        "sql",
-        "mongodb",
-        "rest api"
-    ],
+"Frontend Developer": [
+    "html", "css", "javascript", "typescript",
+    "react", "redux", "bootstrap", "tailwind css",
+    "next.js", "figma"
+],
 
-    "Full Stack Developer": [
-        "html",
-        "css",
-        "javascript",
-        "react",
-        "node",
-        "express",
-        "mongodb"
-    ],
+"Backend Developer": [
+    "python", "django", "flask", "fastapi",
+    "sql", "mongodb", "postgresql",
+    "rest api", "jwt", "microservices"
+],
 
-    "Data Analyst": [
-        "python",
-        "sql",
-        "excel",
-        "power bi",
-        "tableau",
-        "data analysis"
-    ],
+"Full Stack Developer": [
+    "html", "css", "javascript", "react",
+    "node.js", "express", "mongodb",
+    "sql", "rest api", "git"
+],
 
-    "Data Scientist": [
-        "python",
-        "machine learning",
-        "data science",
-        "pandas",
-        "numpy",
-        "scikit-learn"
-    ],
+"Software Engineer": [
+    "python", "java", "c++",
+    "oop", "sql", "git",
+    "github", "system design",
+    "data structures", "algorithms"
+],
 
-    "ML Engineer": [
-        "python",
-        "machine learning",
-        "deep learning",
-        "tensorflow",
-        "pytorch",
-        "scikit-learn"
-    ],
+"Data Analyst": [
+    "python", "sql", "excel",
+    "power bi", "tableau",
+    "data analysis", "statistics",
+    "data visualization",
+    "business intelligence",
+    "power query"
+],
 
-    "Cloud Engineer": [
-        "aws",
-        "azure",
-        "docker",
-        "kubernetes",
-        "linux",
-        "git"
-    ],
+"Business Analyst": [
+    "excel", "sql", "power bi",
+    "tableau", "business intelligence",
+    "data analysis", "statistics",
+    "communication", "reporting",
+    "data visualization"
+],
 
-    "DevOps Engineer": [
-        "docker",
-        "kubernetes",
-        "aws",
-        "git",
-        "github",
-        "linux"
-    ]
+"Data Scientist": [
+    "python", "machine learning",
+    "data science", "pandas",
+    "numpy", "scikit-learn",
+    "statistics",
+    "data visualization",
+    "deep learning",
+    "predictive analytics"
+],
+
+"Data Engineer": [
+    "python", "sql",
+    "etl", "data warehousing",
+    "postgresql", "aws",
+    "data pipelines",
+    "spark",
+    "airflow",
+    "mongodb"
+],
+
+"ML Engineer": [
+    "python",
+    "machine learning",
+    "deep learning",
+    "tensorflow",
+    "pytorch",
+    "scikit-learn",
+    "numpy",
+    "pandas",
+    "computer vision",
+    "nlp"
+],
+
+"AI Engineer": [
+    "python",
+    "machine learning",
+    "deep learning",
+    "tensorflow",
+    "pytorch",
+    "nlp",
+    "computer vision",
+    "hugging face",
+    "data science",
+    "scikit-learn"
+],
+
+"Generative AI Engineer": [
+    "python",
+    "generative ai",
+    "llm",
+    "rag",
+    "langchain",
+    "langgraph",
+    "openai",
+    "prompt engineering",
+    "vector database",
+    "hugging face"
+],
+
+"NLP Engineer": [
+    "python",
+    "nlp",
+    "machine learning",
+    "deep learning",
+    "hugging face",
+    "tensorflow",
+    "pytorch",
+    "llm",
+    "generative ai",
+    "langchain"
+],
+
+"Cloud Engineer": [
+    "aws",
+    "azure",
+    "gcp",
+    "docker",
+    "kubernetes",
+    "linux",
+    "terraform",
+    "git",
+    "jenkins",
+    "ci/cd"
+],
+
+"AWS Cloud Engineer": [
+    "aws",
+    "docker",
+    "kubernetes",
+    "linux",
+    "terraform",
+    "jenkins",
+    "git",
+    "github actions",
+    "ci/cd",
+    "nginx"
+],
+
+"DevOps Engineer": [
+    "docker",
+    "kubernetes",
+    "aws",
+    "linux",
+    "git",
+    "github",
+    "jenkins",
+    "terraform",
+    "ci/cd",
+    "nginx"
+],
+
+"Site Reliability Engineer": [
+    "linux",
+    "aws",
+    "docker",
+    "kubernetes",
+    "terraform",
+    "jenkins",
+    "monitoring",
+    "ci/cd",
+    "nginx",
+    "git"
+],
+
+"React Developer": [
+    "html",
+    "css",
+    "javascript",
+    "typescript",
+    "react",
+    "redux",
+    "next.js",
+    "bootstrap",
+    "tailwind css",
+    "figma"
+],
+
+"Python Developer": [
+    "python",
+    "django",
+    "flask",
+    "fastapi",
+    "sql",
+    "postgresql",
+    "rest api",
+    "jwt",
+    "git",
+    "mongodb"
+],
+
+"Java Developer": [
+    "java",
+    "spring boot",
+    "sql",
+    "rest api",
+    "microservices",
+    "git",
+    "github",
+    "mongodb",
+    "oop",
+    "hibernate"
+],
+
+"Android Developer": [
+    "java",
+    "kotlin",
+    "android",
+    "firebase",
+    "git",
+    "sql",
+    "rest api",
+    "xml",
+    "mobile development",
+    "github"
+],
+
+"Flutter Developer": [
+    "flutter",
+    "dart",
+    "firebase",
+    "rest api",
+    "git",
+    "mobile development",
+    "android",
+    "ios",
+    "github",
+    "sql"
+],
+
+"Cybersecurity Analyst": [
+    "cybersecurity",
+    "network security",
+    "ethical hacking",
+    "penetration testing",
+    "linux",
+    "cryptography",
+    "owasp",
+    "firewalls",
+    "security testing",
+    "risk assessment"
+],
+
+"Database Administrator": [
+    "sql",
+    "mysql",
+    "postgresql",
+    "oracle",
+    "database",
+    "performance tuning",
+    "backup",
+    "recovery",
+    "data warehousing",
+    "linux"
+],
+
+"QA Engineer": [
+    "testing",
+    "unit testing",
+    "integration testing",
+    "pytest",
+    "selenium",
+    "automation testing",
+    "jira",
+    "git",
+    "quality assurance",
+    "bug tracking"
+],
+
+"UI UX Designer": [
+    "figma",
+    "canva",
+    "wireframing",
+    "prototyping",
+    "design",
+    "user research",
+    "ux",
+    "ui",
+    "adobe xd",
+    "mockups"
+]
+
+
 }
+
 
 
 def extract_text(file):
@@ -181,7 +578,17 @@ def extract_text(file):
     return ""
 
 def extract_skills(text):
-    return [skill for skill in SKILLS_DB if skill in text]
+
+    found_skills = []
+
+    for skill in SKILLS_DB:
+
+        pattern = r'\b' + re.escape(skill) + r'\b'
+
+        if re.search(pattern, text):
+            found_skills.append(skill)
+
+    return found_skills
 
 def detect_sections(text):
 
@@ -466,6 +873,12 @@ def index():
 ).lower()
 
         text = extract_text(file)
+        if not text.strip():
+
+         return render_template(
+        "landing.html",
+        error="No text could be extracted from the uploaded resume. Please upload a valid PDF, DOCX, or TXT resume."
+    )
 
         skills = extract_skills(text)
         jd_results = jd_match(
@@ -534,7 +947,5 @@ def index():
     return render_template("landing.html")
 
 
-if __name__ == "__main__":
-    app.run(debug=True)
 if __name__ == "__main__":
     app.run(debug=True)
